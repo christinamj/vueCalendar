@@ -1,0 +1,408 @@
+<script setup>
+import { isProxy, toRaw } from "vue";
+import { ref } from "vue";
+let isApiRespond = ref(false);
+import { reactive } from "vue";
+const addComponent = ref();
+
+console.log(addComponent);
+
+const state = reactive([]);
+const view = reactive({
+  chosen: "week",
+});
+var myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+
+async function getData() {}
+
+let today = new Date();
+// console.log(today);
+let day = today.getDate();
+let month = today.getMonth() + 1;
+let year = today.getFullYear();
+
+// console.log(month);
+// console.log(day);
+
+if (month < 10) {
+  // console.log("yes");
+  month = `0${month}`;
+}
+
+if (day < 10) {
+  // console.log("yes");
+  day = `0${day}`;
+}
+
+let formattedDate = `${year}-${month}-${day}`;
+
+// console.log(formattedDate.toString());
+var raw = JSON.stringify({
+  start: formattedDate.toString(),
+  end: formattedDate.toString(),
+});
+let requestOptions = {
+  method: "POST",
+  headers: myHeaders,
+  body: raw,
+  redirect: "follow",
+};
+let { data } = await useLazyAsyncData(() =>
+  $fetch(
+    "https://prod-67.westeurope.logic.azure.com:443/workflows/d4b2e94b32c047b794d22acb60dc253e/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xfQn5bCTCeDVKzROj5O9jCW0_wl3KhHStjsCRgCQxYc",
+    requestOptions
+  )
+);
+
+function formatDate(date) {
+  //   console.log(date);
+  let day = date.getDate();
+  let month = date.getMonth() + 1;
+  let year = date.getFullYear();
+  if (month < 10) {
+    console.log("yes");
+    month = `0${month}`;
+  }
+
+  if (day < 10) {
+    console.log("yes");
+    day = `0${day}`;
+  }
+  let formattedDate = `${year}-${month}-${day}`;
+  return formattedDate;
+}
+var curr = new Date(); // get current date
+var first = curr.getDate() - curr.getDay() + 1; // First day is the day of the month - the day of the week
+var last = first + 4; // last day is the first day + 6
+
+var firstday = new Date(curr.setDate(first));
+var lastday = new Date(curr.setDate(last));
+var formattedFirstDay = formatDate(firstday);
+var formattedLastDay = formatDate(lastday);
+
+// console.log({ formattedFirstDay });
+// console.log({ formattedLastDay });
+var myHeaders2 = new Headers();
+myHeaders2.append("Content-Type", "application/json");
+
+var raw2 = JSON.stringify({
+  start: formattedFirstDay.toString(),
+  end: formattedLastDay.toString(),
+});
+let requestOptions2 = {
+  method: "POST",
+  headers: myHeaders,
+  body: raw2,
+  redirect: "follow",
+};
+
+const {
+  pending,
+  data: weekData,
+  error,
+  refresh,
+} = await useFetch(
+  "https://prod-67.westeurope.logic.azure.com:443/workflows/d4b2e94b32c047b794d22acb60dc253e/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xfQn5bCTCeDVKzROj5O9jCW0_wl3KhHStjsCRgCQxYc",
+  requestOptions2
+);
+
+let everyone = [
+  { name: "Adam", imageSrc: "Adam.jpg" },
+  { name: "Ane Courage", imageSrc: "AneCourage.jpg" },
+  { name: "Anja", imageSrc: "Anja.jpg" },
+  { name: "Benjamin Burnett", imageSrc: "BenjaminBurnett.jpg" },
+  { name: "Christina Jørgensen", imageSrc: "ChristinaJørgensen.jpg" },
+  { name: "Hanne", imageSrc: "Hanne.jpg" },
+  { name: "Ida", imageSrc: "Ida.jpg" },
+  { name: "Jan Johansen", imageSrc: "JanJohansen.jpg" },
+  { name: "Jesper Halliday", imageSrc: "JesperHalliday.jpg" },
+  { name: "Jonas Palm", imageSrc: "JonasPalm.jpg" },
+  { name: "Jonas", imageSrc: "Jonas.jpg" },
+  { name: "Gansted", imageSrc: "Gansted.jpg" },
+  { name: "Kristian", imageSrc: "KristianThrane.jpg" },
+  { name: "Kristoffer Jonsson", imageSrc: "KristofferJonsson.jpg" },
+  { name: "Lars Jacobsen", imageSrc: "LarsJacobsen.jpg" },
+  { name: "Lasse Pedersen", imageSrc: "LassePedersen.jpg" },
+  { name: "Line Norgaard", imageSrc: "LineNorgaard.jpg" },
+  { name: "Martin Hintzmann", imageSrc: "MartinHintzmann.jpg" },
+  { name: "Mikkel Hansen", imageSrc: "MikkelHansen.jpg" },
+  { name: "Morten", imageSrc: "Morten.jpg" },
+  { name: "Ricky Andersen", imageSrc: "RickyAndersen.jpg" },
+];
+let home = [];
+let sick = [];
+let vacation = [];
+let away = [];
+const registered = reactive([]);
+// let registrered = [];
+
+// console.log(toRaw(data.value));
+
+toRaw(data.value).forEach((one) => {
+  // console.log(one.type);
+
+  if (one.type == "Working from home") {
+    console.log("working from home");
+    let str = one.name.replace(/\s+/g, "");
+    one.imageSrc = `${str}.jpg`;
+    home.push(one);
+    everyone = everyone.filter((person) => person.name != one.name);
+  } else if (one.type == "Out of office") {
+    let str = one.name.replace(/\s+/g, "");
+    one.imageSrc = `${str}.jpg`;
+    // console.log("Out of office");
+    away.push(one);
+
+    everyone = everyone.filter((person) => person.name != one.name);
+  } else if (one.type == "Sick") {
+    let str = one.name.replace(/\s+/g, "");
+    one.imageSrc = `${str}.jpg`;
+    // console.log("sick");
+    sick.push(one);
+
+    everyone = everyone.filter((person) => person.name != one.name);
+  } else if (one.type == "Vacation") {
+    let str = one.name.replace(/\s+/g, "");
+    one.imageSrc = `${str}.jpg`;
+    // console.log("Vacation");
+    vacation.push(one);
+
+    everyone = everyone.filter((person) => person.name != one.name);
+  }
+});
+
+const add = () => {
+  console.log("clicked");
+  document.querySelector(".addStatus").classList.remove("hidden");
+  document.querySelector(".overlay").classList.remove("hidden");
+
+  document.querySelector(".overlay").addEventListener("click", () => {
+    document.querySelector(".addStatus").classList.add("hidden");
+    document.querySelector(".overlay").classList.add("hidden");
+    refreshData();
+    addComponent.value.clearAmountState();
+    // this.$refs.weekRef.refreshData();
+  });
+};
+
+const refreshData = () => {
+  console.log("refreshed");
+  refresh();
+  console.log(weekData);
+};
+
+const deleteStatus = () => {
+  document.querySelector(".deleteStatus").classList.remove("hidden");
+  document.querySelector(".overlay").classList.remove("hidden");
+
+  document.querySelector(".overlay").addEventListener("click", () => {
+    document.querySelector(".deleteStatus").classList.add("hidden");
+    document.querySelector(".overlay").classList.add("hidden");
+    refreshData();
+  });
+};
+
+async function postData(url = "", data = {}) {
+  const response = await fetch(url, {
+    method: "POST",
+    //mode: "no-cors", // cors, *cors, same-origin
+    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+    //credentials: "same-origin", // include, *same-origin, omit
+    headers: {
+      "Content-Type": "application/json",
+    },
+    //redirect: "follow", // manual, *follow, error
+    //referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    body: JSON.stringify(data), // body data type must match "Content-Type" header
+  });
+  // console.log(JSON.stringify(data));
+  // console.log(response);
+  return response.json(); // parses JSON response into native JavaScript objects
+}
+
+function loadEntries() {
+  document.querySelector(".loaderSpan").classList.add("loader");
+  // let table = document.querySelector("table#results");
+  // table.innerHTML = "";
+  postData(
+    "https://prod-239.westeurope.logic.azure.com:443/workflows/795a62e8bd5847c9b4659aae53e09190/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=OBT7p19kePGkzXtOioxwPjIY9dgvGJla_z54nZoZRsg",
+    buildPayloadForEntries()
+  ).then((data) => {
+    // console.log(data);
+    buildResults(data.results);
+  });
+}
+
+function buildPayloadForEntries() {
+  var email = document.getElementById("deleteEmail");
+  // console.log(email);
+  var payload = {
+    email: email.value,
+  };
+  return payload;
+}
+
+function buildResults(json) {
+  // console.log(json);
+
+  json.forEach((one) => {
+    one.start = new Date(one.start).toLocaleDateString("da-DK");
+    one.end = new Date(one.end).toLocaleDateString("da-DK");
+    if (one.type == "Working from home") {
+      one.type = "Arbejder hjemme";
+    } else if (one.type == "Sick") {
+      one.type = "Syg";
+    } else if (one.type == "Vacation") {
+      one.type = "Ferie";
+    } else if (one.type == "Out of office") {
+      one.type = "Væk fra kontoret";
+    }
+    state.push(one);
+    // console.log(one);
+  });
+  document.querySelector(".loaderSpan").classList.remove("loader");
+}
+
+function weekView() {
+  document.querySelector(".week").classList.add("active");
+  document.querySelector(".day").classList.remove("active");
+  view.chosen = "week";
+}
+
+function dayView() {
+  document.querySelector(".week").classList.remove("active");
+  document.querySelector(".day").classList.add("active");
+  view.chosen = "day";
+}
+</script>
+
+<template>
+  <div class="overlay hidden"></div>
+  <div class="bodyTop">
+    <div class="addDelete">
+      <div class="add" @click="add">
+        <img src="/img/square-plus-solid.svg" alt="" />
+        <p>Opret status</p>
+      </div>
+      <div class="delete" @click="deleteStatus">
+        <img src="/img/square-minus-solid.svg" alt="" />
+        <p>Slet status</p>
+      </div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="headerLogo">
+      <img class="logo" src="/img/ApplyLogotypeBlackLarge.svg" alt="" />
+      <h1>Status</h1>
+    </div>
+    <p>Visning:</p>
+    <div class="view">
+      <p @click="weekView" class="viewOption week active">Uge</p>
+      <p>|</p>
+      <p @click="dayView" class="viewOption day">Dag</p>
+    </div>
+    <!-- <div>{{ state }}</div> -->
+    <div class="dayContainer" v-if="view.chosen == 'day'">
+      <div v-if="everyone.length > 0">
+        <div class="emojiLabel">
+          <p class="emoji">🏢</p>
+          <p>På kontoret</p>
+        </div>
+        <div class="dayGrid">
+          <div v-for="(item, index) in everyone" :key="index">
+            <Person :imageSrc="item.imageSrc" status="active"></Person>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="home.length > 0">
+        <div class="emojiLabel">
+          <p class="emoji">🏡</p>
+          <p>Hjemme</p>
+        </div>
+        <div class="dayGrid">
+          <div v-for="(item, index) in home" :key="index">
+            <Person :imageSrc="item.imageSrc" status="active"></Person>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="sick.length > 0">
+        <div class="emojiLabel">
+          <p class="emoji">🤒</p>
+          <p>Hjemme</p>
+        </div>
+        <div class="dayGrid">
+          <div v-for="(item, index) in sick" :key="index">
+            <Person :imageSrc="item.imageSrc" status="active"></Person>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="away.length > 0">
+        <div class="emojiLabel">
+          <p class="emoji">👻</p>
+          <p>Væk fra kontoret</p>
+        </div>
+        <div class="dayGrid">
+          <div v-for="(item, index) in away" :key="index">
+            <Person :imageSrc="item.imageSrc" status="offline"></Person>
+          </div>
+        </div>
+      </div>
+      <div v-if="vacation.length > 0">
+        <div class="emojiLabel">
+          <p class="emoji">🌴</p>
+          <p>Væk fra kontoret</p>
+        </div>
+        <div class="dayGrid">
+          <div v-for="(item, index) in vacation" :key="index">
+            <Person :imageSrc="item.imageSrc" status="offline"></Person>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="weekContainer" v-if="view.chosen == 'week'">
+      <WeekView :data="weekData" ref="weekRef"></WeekView>
+    </div>
+    <div class="addStatus hidden">
+      <AddStatus ref="addComponent"></AddStatus>
+    </div>
+    <div class="deleteStatus hidden">
+      <h3>Slet status</h3>
+      <form class="deleteForm">
+        <table>
+          <tr id="emailRow">
+            <td><label for="email">Email:</label></td>
+            <td><input type="text" id="deleteEmail" name="email" /></td>
+          </tr>
+        </table>
+      </form>
+      <a class="btn" @click="loadEntries">Hent værdier</a>
+      <span class="loaderSpan"></span>
+      <div id="status"></div>
+      <!-- <table id="results"></table> -->
+
+      <div v-if="state.length > 0">
+        <RegistrationsTable :registrations="state"></RegistrationsTable>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.emojiLabel {
+  margin-bottom: 30px;
+}
+.emoji {
+  width: fit-content;
+  font-size: 32px;
+  border-bottom: 1px solid black;
+  margin-bottom: 10px;
+}
+</style>
+
+<style src="/assets/styles/global.css">
+@import "/assets/styles/global.css";
+</style>
