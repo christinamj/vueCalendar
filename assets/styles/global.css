@@ -140,10 +140,6 @@ select::focus-visible {
 }
 
 select {
-  background-image: url(
-    data:image/svg + xml;utf8,
-    <svgfill="black"height="24"viewBox="0 0 24 24"width="24"xmlns="http://www.w3.org/2000/svg"><pathd="M7 10l5 5 5-5z"/><pathd="M0 0h24v24H0z"fill="none"/></svg>
-  );
   background-repeat: no-repeat;
   background-position-x: 98.5%;
   background-position-y: 5px;

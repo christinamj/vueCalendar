@@ -7,11 +7,11 @@ const weekArray = reactive([]);
 watch(
   () => props.data,
   (first, second) => {
-    console.log(
-      "Watch props.selected function called with args:",
-      first,
-      second
-    );
+    // console.log(
+    //   "Watch props.selected function called with args:",
+    //   first,
+    //   second
+    // );
     weekArray.splice(0);
     formatData();
   }
@@ -103,7 +103,7 @@ formatData();
 // };
 // getData();
 
-console.log(props.data);
+// console.log(props.data);
 // let { data } = await useLazyAsyncData(() =>
 //   $fetch(
 //     "https://prod-67.westeurope.logic.azure.com:443/workflows/d4b2e94b32c047b794d22acb60dc253e/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xfQn5bCTCeDVKzROj5O9jCW0_wl3KhHStjsCRgCQxYc",
@@ -138,7 +138,7 @@ function formatData() {
           for (const property in obj) {
             //   console.log(`${property}: ${object[property]}`);
             if (property >= startWeekDay && property <= endWeekDay) {
-              console.log(property, obj[property]);
+              //   console.log(property, obj[property]);
               obj[property] = elm.type;
             }
           }
@@ -179,7 +179,7 @@ function formatData() {
   });
 }
 
-console.log(weekArray);
+// console.log(weekArray);
 
 function formatDate(date) {
   //   console.log(date);
@@ -187,12 +187,12 @@ function formatDate(date) {
   let month = date.getMonth() + 1;
   let year = date.getFullYear();
   if (month < 10) {
-    console.log("yes");
+    // console.log("yes");
     month = `0${month}`;
   }
 
   if (day < 10) {
-    console.log("yes");
+    // console.log("yes");
     day = `0${day}`;
   }
   let formattedDate = `${year}-${month}-${day}`;

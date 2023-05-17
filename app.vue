@@ -5,7 +5,7 @@ let isApiRespond = ref(false);
 import { reactive } from "vue";
 const addComponent = ref();
 
-console.log(addComponent);
+// console.log(addComponent);
 
 const state = reactive([]);
 const view = reactive({
@@ -61,12 +61,12 @@ function formatDate(date) {
   let month = date.getMonth() + 1;
   let year = date.getFullYear();
   if (month < 10) {
-    console.log("yes");
+    // console.log("yes");
     month = `0${month}`;
   }
 
   if (day < 10) {
-    console.log("yes");
+    // console.log("yes");
     day = `0${day}`;
   }
   let formattedDate = `${year}-${month}-${day}`;
@@ -173,7 +173,7 @@ toRaw(data.value).forEach((one) => {
 });
 
 const add = () => {
-  console.log("clicked");
+  // console.log("clicked");
   document.querySelector(".addStatus").classList.remove("hidden");
   document.querySelector(".overlay").classList.remove("hidden");
 
@@ -187,9 +187,9 @@ const add = () => {
 };
 
 const refreshData = () => {
-  console.log("refreshed");
+  // console.log("refreshed");
   refresh();
-  console.log(weekData);
+  // console.log(weekData);
 };
 
 const deleteStatus = () => {

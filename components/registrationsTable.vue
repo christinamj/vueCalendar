@@ -7,7 +7,7 @@ let fields = ["Navn", "Email", "Type", "Start", "Slut", "Link"];
 let textValues = [];
 
 props.registrations.forEach((one) => {
-  console.log(one);
+  //   console.log(one);
 
   let object = {
     name: one.name,

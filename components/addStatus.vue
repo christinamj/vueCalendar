@@ -11,10 +11,10 @@ moment("2016-07-02T19:27:28.000+0000").format("MMMM Do YYYY, h:mm:ss a");
 onMounted(() => {
   showHideDiv();
 });
-console.log("Add status");
+// console.log("Add status");
 
 function showHideDiv() {
-  console.log("show hide");
+  //   console.log("show hide");
   //setup interface according to start/end rules
   var typeSelector = document.getElementById("type");
   var startDateRow = document.getElementById("startDateRow");
@@ -57,7 +57,7 @@ async function postData(url = "", data = {}) {
 }
 
 const clearAmountState = () => {
-  console.log("Clear amount");
+  //   console.log("Clear amount");
   added.amount = 0;
 };
 
