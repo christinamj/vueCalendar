@@ -107,6 +107,8 @@ const {
   requestOptions2
 );
 
+console.log(pending);
+
 let everyone = [
   { name: "Adam", imageSrc: "Adam.jpg" },
   { name: "Ane Courage", imageSrc: "AneCourage.jpg" },
@@ -200,6 +202,7 @@ const deleteStatus = () => {
     document.querySelector(".deleteStatus").classList.add("hidden");
     document.querySelector(".overlay").classList.add("hidden");
     refreshData();
+    state.splice(0);
   });
 };
 
@@ -364,6 +367,7 @@ function dayView() {
       </div>
     </div>
     <div class="weekContainer" v-if="view.chosen == 'week'">
+      <span v-if="pending" class="loader"></span>
       <WeekView :data="weekData" ref="weekRef"></WeekView>
     </div>
     <div class="addStatus hidden">

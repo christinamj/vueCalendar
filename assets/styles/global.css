@@ -161,7 +161,7 @@ input {
 }
 
 td {
-  font-family: "OpenSans-light";
+  font-family: "OpenSans";
 }
 
 a {
@@ -197,6 +197,17 @@ header nav a {
 
 .hidden {
   display: none !important;
+}
+
+.smallLoader {
+  width: 20px;
+  height: 20px;
+  border: 5px solid #d3d3d3;
+  border-bottom-color: #4c4c4c;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
 }
 
 .loader {
@@ -340,6 +351,7 @@ header nav a {
 .deleteBtn {
   font-family: "OpenSans-bold";
   text-decoration: underline;
+  cursor: pointer;
 }
 
 #results th,

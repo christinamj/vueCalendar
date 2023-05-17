@@ -201,7 +201,6 @@ function formatDate(date) {
 </script>
 <template>
   <div class="weekComponent">
-    <span v-if="pending" class="loader"></span>
     <div class="weekGrid">
       <div v-for="(item, index) in weekArray" :key="index">
         <WeekCard :person="item"></WeekCard>
