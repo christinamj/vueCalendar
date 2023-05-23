@@ -2,6 +2,7 @@
 // const props = defineProps({ registrations: Array });
 import { onMounted } from "vue";
 import { reactive } from "vue";
+const addedStatus = useState("addedStatus");
 import moment from "moment";
 const added = reactive({
   amount: 0,
@@ -52,13 +53,15 @@ async function postData(url = "", data = {}) {
   //   console.log(JSON.stringify(data));
   //   console.log(response);
   loader.classList.remove("loader");
-  added.amount = added.amount + 1;
+  //   added.amount = added.amount + 1;
+
+  addedStatus.value++;
   return response.json(); // parses JSON response into native JavaScript objects
 }
 
 const clearAmountState = () => {
   //   console.log("Clear amount");
-  added.amount = 0;
+  addedStatus.value = 0;
 };
 
 defineExpose({
@@ -152,9 +155,9 @@ function buildPayload() {
     >
     <span class="loadSpan"></span>
   </div>
-  <div class="succesMessage" v-if="added.amount > 0">
+  <div class="succesMessage" v-if="addedStatus > 0">
     <img src="/img/check-solid.svg" alt="" />
-    <p>{{ added.amount }} status(er) blev oprettet</p>
+    <p>{{ addedStatus }} er oprettet</p>
   </div>
 </template>
 

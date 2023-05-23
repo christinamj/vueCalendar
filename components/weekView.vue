@@ -1,17 +1,27 @@
 <script setup>
 import { reactive } from "vue";
 import moment from "moment";
+const weekStateData = useState("weekStateData");
+console.log("week", toRaw(weekStateData.value));
 
 const props = defineProps({ data: Array });
 const weekArray = reactive([]);
 watch(
   () => props.data,
   (first, second) => {
-    // console.log(
-    //   "Watch props.selected function called with args:",
-    //   first,
-    //   second
-    // );
+    console.log("Watch props.data function called with args:", first, second);
+    weekArray.splice(0);
+    formatData();
+  }
+);
+watch(
+  () => weekStateData,
+  (first, second) => {
+    console.log(
+      "Watch week state data function called with args:",
+      first,
+      second
+    );
     weekArray.splice(0);
     formatData();
   }

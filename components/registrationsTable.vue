@@ -1,5 +1,6 @@
 <script setup>
 const props = defineProps({ registrations: Array });
+const deletedStatus = useState("deletedStatus");
 // console.log(props.registrations);
 
 // let fields = Object.keys(props.registrations[0]);
@@ -58,6 +59,7 @@ function deleteEntry(id) {
       while (table && table.tagName != "TABLE") table = table.parentNode;
       if (!table) return;
       table.deleteRow(row.rowIndex);
+      deletedStatus.value = true;
     }
   });
 }

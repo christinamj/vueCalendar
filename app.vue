@@ -4,56 +4,21 @@ import { ref } from "vue";
 let isApiRespond = ref(false);
 import { reactive } from "vue";
 const addComponent = ref();
+const dayData = useState("dayData");
+const weekStateData = useState("weekStateData");
+const deletedStatus = useDeletedStatus();
+const addedStatus = useAddedStatus();
 
+// console.log(removed);
+
+// console.log(dayData.value);
 // console.log(addComponent);
 
 const state = reactive([]);
+const pending = ref(false);
 const view = reactive({
   chosen: "week",
 });
-var myHeaders = new Headers();
-myHeaders.append("Content-Type", "application/json");
-
-async function getData() {}
-
-let today = new Date();
-// console.log(today);
-let day = today.getDate();
-let month = today.getMonth() + 1;
-let year = today.getFullYear();
-
-// console.log(month);
-// console.log(day);
-
-if (month < 10) {
-  // console.log("yes");
-  month = `0${month}`;
-}
-
-if (day < 10) {
-  // console.log("yes");
-  day = `0${day}`;
-}
-
-let formattedDate = `${year}-${month}-${day}`;
-
-// console.log(formattedDate.toString());
-var raw = JSON.stringify({
-  start: formattedDate.toString(),
-  end: formattedDate.toString(),
-});
-let requestOptions = {
-  method: "POST",
-  headers: myHeaders,
-  body: raw,
-  redirect: "follow",
-};
-let { data } = await useLazyAsyncData(() =>
-  $fetch(
-    "https://prod-67.westeurope.logic.azure.com:443/workflows/d4b2e94b32c047b794d22acb60dc253e/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xfQn5bCTCeDVKzROj5O9jCW0_wl3KhHStjsCRgCQxYc",
-    requestOptions
-  )
-);
 
 function formatDate(date) {
   //   console.log(date);
@@ -72,44 +37,91 @@ function formatDate(date) {
   let formattedDate = `${year}-${month}-${day}`;
   return formattedDate;
 }
-var curr = new Date(); // get current date
-var first = curr.getDate() - curr.getDay() + 1; // First day is the day of the month - the day of the week
-var last = first + 4; // last day is the first day + 6
 
-var firstday = new Date(curr.setDate(first));
-var lastday = new Date(curr.setDate(last));
-var formattedFirstDay = formatDate(firstday);
-var formattedLastDay = formatDate(lastday);
+async function getDayData() {
+  var myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
 
-// console.log({ formattedFirstDay });
-// console.log({ formattedLastDay });
-var myHeaders2 = new Headers();
-myHeaders2.append("Content-Type", "application/json");
+  let today = new Date();
+  let day = today.getDate();
+  let month = today.getMonth() + 1;
+  let year = today.getFullYear();
 
-var raw2 = JSON.stringify({
-  start: formattedFirstDay.toString(),
-  end: formattedLastDay.toString(),
-});
-let requestOptions2 = {
-  method: "POST",
-  headers: myHeaders,
-  body: raw2,
-  redirect: "follow",
-};
+  if (month < 10) {
+    month = `0${month}`;
+  }
 
-const {
-  pending,
-  data: weekData,
-  error,
-  refresh,
-} = await useFetch(
-  "https://prod-67.westeurope.logic.azure.com:443/workflows/d4b2e94b32c047b794d22acb60dc253e/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xfQn5bCTCeDVKzROj5O9jCW0_wl3KhHStjsCRgCQxYc",
-  requestOptions2
-);
+  if (day < 10) {
+    day = `0${day}`;
+  }
+
+  let formattedDate = `${year}-${month}-${day}`;
+
+  var raw = JSON.stringify({
+    start: formattedDate.toString(),
+    end: formattedDate.toString(),
+  });
+  let requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+    redirect: "follow",
+  };
+
+  await useFetch(
+    `https://prod-67.westeurope.logic.azure.com:443/workflows/d4b2e94b32c047b794d22acb60dc253e/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xfQn5bCTCeDVKzROj5O9jCW0_wl3KhHStjsCRgCQxYc`,
+    requestOptions
+  ).then(function (data) {
+    console.log(data.data);
+    dayData.value = data.data.value;
+    formatDayData();
+  });
+}
+
+async function getWeekData() {
+  var curr = new Date(); // get current date
+  var first = curr.getDate() - curr.getDay() + 1; // First day is the day of the month - the day of the week
+  var last = first + 4; // last day is the first day + 6
+
+  var firstday = new Date(curr.setDate(first));
+  var lastday = new Date(curr.setDate(last));
+  var formattedFirstDay = formatDate(firstday);
+  var formattedLastDay = formatDate(lastday);
+
+  // console.log({ formattedFirstDay });
+  // console.log({ formattedLastDay });
+  var myHeaders2 = new Headers();
+  myHeaders2.append("Content-Type", "application/json");
+
+  var raw2 = JSON.stringify({
+    start: formattedFirstDay.toString(),
+    end: formattedLastDay.toString(),
+  });
+  let requestOptions2 = {
+    method: "POST",
+    headers: myHeaders2,
+    body: raw2,
+    redirect: "follow",
+  };
+
+  pending.value = true;
+
+  await useFetch(
+    `https://prod-67.westeurope.logic.azure.com:443/workflows/d4b2e94b32c047b794d22acb60dc253e/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xfQn5bCTCeDVKzROj5O9jCW0_wl3KhHStjsCRgCQxYc`,
+    requestOptions2
+  ).then(function (data) {
+    console.log(data.data);
+    weekStateData.value = data.data.value;
+    pending.value = false;
+  });
+}
+
+getWeekData();
+getDayData();
 
 console.log(pending);
 
-let everyone = [
+let everyone = reactive([
   { name: "Adam", imageSrc: "Adam.jpg" },
   { name: "Ane Courage", imageSrc: "AneCourage.jpg" },
   { name: "Anja", imageSrc: "Anja.jpg" },
@@ -131,7 +143,7 @@ let everyone = [
   { name: "Mikkel Hansen", imageSrc: "MikkelHansen.jpg" },
   { name: "Morten", imageSrc: "Morten.jpg" },
   { name: "Ricky Andersen", imageSrc: "RickyAndersen.jpg" },
-];
+]);
 let home = [];
 let sick = [];
 let vacation = [];
@@ -140,39 +152,42 @@ const registered = reactive([]);
 // let registrered = [];
 
 // console.log(toRaw(data.value));
+// console.log(data.value);
 
-toRaw(data.value).forEach((one) => {
-  // console.log(one.type);
+const formatDayData = () => {
+  toRaw(dayData.value).forEach((one) => {
+    // console.log(one.type);
 
-  if (one.type == "Working from home") {
-    console.log("working from home");
-    let str = one.name.replace(/\s+/g, "");
-    one.imageSrc = `${str}.jpg`;
-    home.push(one);
-    everyone = everyone.filter((person) => person.name != one.name);
-  } else if (one.type == "Out of office") {
-    let str = one.name.replace(/\s+/g, "");
-    one.imageSrc = `${str}.jpg`;
-    // console.log("Out of office");
-    away.push(one);
+    if (one.type == "Working from home") {
+      console.log("working from home");
+      let str = one.name.replace(/\s+/g, "");
+      one.imageSrc = `${str}.jpg`;
+      home.push(one);
+      everyone = everyone.filter((person) => person.name != one.name);
+    } else if (one.type == "Out of office") {
+      let str = one.name.replace(/\s+/g, "");
+      one.imageSrc = `${str}.jpg`;
+      // console.log("Out of office");
+      away.push(one);
 
-    everyone = everyone.filter((person) => person.name != one.name);
-  } else if (one.type == "Sick") {
-    let str = one.name.replace(/\s+/g, "");
-    one.imageSrc = `${str}.jpg`;
-    // console.log("sick");
-    sick.push(one);
+      everyone = everyone.filter((person) => person.name != one.name);
+    } else if (one.type == "Sick") {
+      let str = one.name.replace(/\s+/g, "");
+      one.imageSrc = `${str}.jpg`;
+      // console.log("sick");
+      sick.push(one);
 
-    everyone = everyone.filter((person) => person.name != one.name);
-  } else if (one.type == "Vacation") {
-    let str = one.name.replace(/\s+/g, "");
-    one.imageSrc = `${str}.jpg`;
-    // console.log("Vacation");
-    vacation.push(one);
+      everyone = everyone.filter((person) => person.name != one.name);
+    } else if (one.type == "Vacation") {
+      let str = one.name.replace(/\s+/g, "");
+      one.imageSrc = `${str}.jpg`;
+      // console.log("Vacation");
+      vacation.push(one);
 
-    everyone = everyone.filter((person) => person.name != one.name);
-  }
-});
+      everyone = everyone.filter((person) => person.name != one.name);
+    }
+  });
+};
 
 const add = () => {
   // console.log("clicked");
@@ -182,17 +197,32 @@ const add = () => {
   document.querySelector(".overlay").addEventListener("click", () => {
     document.querySelector(".addStatus").classList.add("hidden");
     document.querySelector(".overlay").classList.add("hidden");
-    refreshData();
-    addComponent.value.clearAmountState();
+    console.log(addedStatus.value);
+    if (addedStatus.value > 0) {
+      console.log("larger than 0");
+      getWeekData();
+      addedStatus.value = 0;
+    }
+
     // this.$refs.weekRef.refreshData();
   });
 };
 
-const refreshData = () => {
-  // console.log("refreshed");
-  refresh();
-  // console.log(weekData);
-};
+// const refreshData = () => {
+//   console.log("refreshed");
+//   refresh();
+//   weekStateData.value = weekData.value;
+//   // console.log(weekData);
+// };
+
+// const refreshDayData = () => {
+//   // console.log("refreshed");
+//   console.log("refreshing day");
+//   refreshDay();
+//   dayData.value = data.value;
+
+//   // console.log(weekData);
+// };
 
 const deleteStatus = () => {
   document.querySelector(".deleteStatus").classList.remove("hidden");
@@ -201,7 +231,15 @@ const deleteStatus = () => {
   document.querySelector(".overlay").addEventListener("click", () => {
     document.querySelector(".deleteStatus").classList.add("hidden");
     document.querySelector(".overlay").classList.add("hidden");
-    refreshData();
+    console.log(view.chosen);
+    console.log(state);
+    console.log(deletedStatus);
+    if (deletedStatus.value == true) {
+      console.log("true", deletedStatus);
+      getWeekData();
+      getDayData();
+    }
+    deletedStatus.value = false;
     state.splice(0);
   });
 };
@@ -367,8 +405,8 @@ function dayView() {
       </div>
     </div>
     <div class="weekContainer" v-if="view.chosen == 'week'">
-      <span v-if="pending" class="loader"></span>
-      <WeekView :data="weekData" ref="weekRef"></WeekView>
+      <span v-if="pending" class="loader pendingLoader"></span>
+      <WeekView :data="weekStateData" ref="weekRef"></WeekView>
     </div>
     <div class="addStatus hidden">
       <AddStatus ref="addComponent"></AddStatus>

@@ -131,7 +131,7 @@ p {
 
 label {
   font-size: 14px;
-  font-family: OpenSans-light;
+  font-family: OpenSans;
   margin: 0;
 }
 
@@ -197,6 +197,10 @@ header nav a {
 
 .hidden {
   display: none !important;
+}
+
+.pendingLoader {
+  margin-bottom: 20px;
 }
 
 .smallLoader {
@@ -280,7 +284,7 @@ header nav a {
 .addStatus {
   padding: 25px;
   width: fit-content;
-  height: 550px;
+  height: 500px;
   background: #fbfbfb;
   position: fixed;
   top: 50%;
@@ -288,7 +292,6 @@ header nav a {
   transform: translate(-50%, -50%);
   /* width: 50%; */
   z-index: 3;
-  overflow: scroll;
 }
 
 .addBtn {
@@ -324,7 +327,7 @@ header nav a {
 }
 
 #status {
-  font-family: "OpenSans-light";
+  font-family: "OpenSans";
 }
 
 #results,
@@ -602,7 +605,7 @@ footer {
 
   p {
     font-size: 14px;
-    font-family: OpenSans-light;
+    font-family: OpenSans;
   }
 
   header {
@@ -623,7 +626,7 @@ footer {
   }
 }
 
-@media only screen and (min-width: 2000px) {
+@media only screen and (min-width: 1500px) {
   .deleteStatus {
     padding: 25px;
     width: fit-content;
@@ -634,9 +637,12 @@ footer {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    /* width: 50%; */
     z-index: 3;
+    overflow: unset;
   }
+}
+
+@media only screen and (min-width: 2000px) {
   .dayGrid {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     grid-gap: 70px;
