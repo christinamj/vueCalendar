@@ -2,7 +2,6 @@
 import { reactive } from "vue";
 import moment from "moment";
 const weekStateData = useState("weekStateData");
-console.log("week", toRaw(weekStateData.value));
 
 const props = defineProps({ data: Array });
 const weekArray = reactive([]);

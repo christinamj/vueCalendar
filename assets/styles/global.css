@@ -253,7 +253,7 @@ header nav a {
 }
 .emojiLabel .emoji {
   width: fit-content;
-  font-size: 32px;
+  font-size: 25px;
   border-bottom: 1px solid black;
   margin-bottom: 10px;
 }

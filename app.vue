@@ -72,7 +72,6 @@ async function getDayData() {
     `https://prod-67.westeurope.logic.azure.com:443/workflows/d4b2e94b32c047b794d22acb60dc253e/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xfQn5bCTCeDVKzROj5O9jCW0_wl3KhHStjsCRgCQxYc`,
     requestOptions
   ).then(function (data) {
-    console.log(data.data);
     dayData.value = data.data.value;
     formatDayData();
   });
@@ -110,7 +109,6 @@ async function getWeekData() {
     `https://prod-67.westeurope.logic.azure.com:443/workflows/d4b2e94b32c047b794d22acb60dc253e/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xfQn5bCTCeDVKzROj5O9jCW0_wl3KhHStjsCRgCQxYc`,
     requestOptions2
   ).then(function (data) {
-    console.log(data.data);
     weekStateData.value = data.data.value;
     pending.value = false;
   });
@@ -118,8 +116,6 @@ async function getWeekData() {
 
 getWeekData();
 getDayData();
-
-console.log(pending);
 
 let initialEveryone = [
   { name: "Adam", imageSrc: "Adam.jpg" },
@@ -157,12 +153,8 @@ const registered = reactive([]);
 // console.log(data.value);
 
 const formatDayData = () => {
-  console.log("format day");
   toRaw(dayData.value).forEach((one) => {
-    // console.log(one.type);
-
     if (one.type == "Working from home") {
-      console.log("working from home");
       let str = one.name.replace(/\s+/g, "");
       one.imageSrc = `${str}.jpg`;
       home.push(one);
@@ -200,9 +192,7 @@ const add = () => {
   document.querySelector(".overlay").addEventListener("click", () => {
     document.querySelector(".addStatus").classList.add("hidden");
     document.querySelector(".overlay").classList.add("hidden");
-    console.log(addedStatus.value);
     if (addedStatus.value > 0) {
-      console.log("larger than 0");
       getWeekData();
       getDayData();
       addedStatus.value = 0;
@@ -235,11 +225,7 @@ const deleteStatus = () => {
   document.querySelector(".overlay").addEventListener("click", () => {
     document.querySelector(".deleteStatus").classList.add("hidden");
     document.querySelector(".overlay").classList.add("hidden");
-    console.log(view.chosen);
-    console.log(state);
-    console.log(deletedStatus);
     if (deletedStatus.value == true) {
-      console.log("true", deletedStatus);
       everyone = initialEveryone;
       home = [];
       sick = [];

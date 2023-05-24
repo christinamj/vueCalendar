@@ -16,14 +16,11 @@ onMounted(() => {
 // console.log("Add status");
 
 function showHideDiv() {
-  console.log("show hide");
   //setup interface according to start/end rules
   var typeSelector = document.querySelector('input[name="type"]:checked').value;
-  console.log(typeSelector);
   var startDateRow = document.getElementById("startDateRow");
   var endDateRow = document.getElementById("endDateRow");
   if (typeSelector == "Working from home") {
-    console.log("yes");
     startDateRow.style.display = "flex";
     endDateRow.style.display = "none";
   } else if (typeSelector == "Sick") {

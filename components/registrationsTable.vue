@@ -50,11 +50,7 @@ function deleteEntry(id) {
     "https://prod-25.westeurope.logic.azure.com:443/workflows/be90d5882eb74132bb6b274a4dab2dcb/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=1mOW5nfAKg3xYvM4oW8o7WEcf74eNvTHyyHjxeuMu60",
     buildPayloadForDelete(id)
   ).then((data) => {
-    console.log(data);
-    console.log(data.result);
     if (data.result == "ok") {
-      console.log(cell);
-      console.log(row);
       var table = row.parentNode;
       while (table && table.tagName != "TABLE") table = table.parentNode;
       if (!table) return;
