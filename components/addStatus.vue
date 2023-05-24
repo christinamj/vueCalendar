@@ -7,7 +7,8 @@ import moment from "moment";
 const added = reactive({
   amount: 0,
 });
-moment("2016-07-02T19:27:28.000+0000").format("MMMM Do YYYY, h:mm:ss a");
+
+// moment("2016-07-02T19:27:28.000+0000").format("MMMM Do YYYY, h:mm:ss a");
 
 onMounted(() => {
   showHideDiv();
@@ -15,21 +16,23 @@ onMounted(() => {
 // console.log("Add status");
 
 function showHideDiv() {
-  //   console.log("show hide");
+  console.log("show hide");
   //setup interface according to start/end rules
-  var typeSelector = document.getElementById("type");
+  var typeSelector = document.querySelector('input[name="type"]:checked').value;
+  console.log(typeSelector);
   var startDateRow = document.getElementById("startDateRow");
   var endDateRow = document.getElementById("endDateRow");
-  if (typeSelector.value == "Working from home") {
+  if (typeSelector == "Working from home") {
+    console.log("yes");
     startDateRow.style.display = "flex";
     endDateRow.style.display = "none";
-  } else if (typeSelector.value == "Sick") {
+  } else if (typeSelector == "Sick") {
     startDateRow.style.display = "none";
     endDateRow.style.display = "none";
-  } else if (typeSelector.value == "Vacation") {
+  } else if (typeSelector == "Vacation") {
     startDateRow.style.display = "flex";
     endDateRow.style.display = "flex";
-  } else if (typeSelector.value == "Out of office") {
+  } else if (typeSelector == "Out of office") {
     startDateRow.style.display = "flex";
     endDateRow.style.display = "flex";
   }
@@ -71,26 +74,26 @@ defineExpose({
 function buildPayload() {
   let loader = document.querySelector(".loadSpan");
   loader.classList.add("loader");
-  var typeSelector = document.getElementById("type");
+  var typeSelector = document.querySelector('input[name="type"]:checked').value;
   var email = document.getElementById("email");
   var startDate;
   var endDate;
 
-  if (typeSelector.value == "Working from home") {
+  if (typeSelector == "Working from home") {
     //handle start/end times according to type; ie sick days are always registered on actual day
     startDate = document.getElementById("startDate").value;
     endDate = startDate;
-  } else if (typeSelector.value == "Sick") {
+  } else if (typeSelector == "Sick") {
     startDate = new Date().toISOString().split(".")[0].slice(0, 14) + "00";
     endDate = startDate;
-  } else if (typeSelector.value == "Vacation") {
+  } else if (typeSelector == "Vacation") {
     // startDate = "2023-05-08T14:48:00";
     // endDate = "2023-05-10T14:48:00";
     startDate = document.getElementById("startDate").value;
     endDate = document.getElementById("endDate").value;
     // startDate = moment(start.toString()).format("MMMM Do YYYY, h:mm:ss");
     // endDate = moment(end.toString()).format("MMMM Do YYYY, h:mm:ss");
-  } else if (typeSelector.value == "Out of office") {
+  } else if (typeSelector == "Out of office") {
     startDate = document.getElementById("startDate").value;
     endDate = document.getElementById("endDate").value;
   }
@@ -99,7 +102,7 @@ function buildPayload() {
 
   var payload = {
     assignee: email.value,
-    availability: typeSelector.value,
+    availability: typeSelector,
     comment: "",
     start: startDate,
     end: endDate,
@@ -111,22 +114,57 @@ function buildPayload() {
 
 <template>
   <h3>Opret status</h3>
+  <label for="type">Vælg type:</label>
   <form class="addForm">
     <table>
-      <tr id="emailRow">
-        <td><label for="email">Email:</label></td>
-        <td><input type="text" id="email" name="email" /></td>
-      </tr>
       <tr id="typeRow">
-        <td><label for="type">Type:</label></td>
-        <td>
-          <select name="type" id="type" @input="showHideDiv()">
+        <input
+          class="hidden"
+          type="radio"
+          id="home"
+          name="type"
+          value="Working from home"
+          checked
+          v-on:change="showHideDiv()"
+        />
+        <label for="home" class="emoji emoji-1">🏡</label>
+        <input
+          class="hidden"
+          type="radio"
+          id="sick"
+          name="type"
+          value="Sick"
+          v-on:change="showHideDiv()"
+        />
+        <label for="sick" class="emoji emoji-2">🤒</label>
+        <input
+          class="hidden"
+          type="radio"
+          id="vacation"
+          name="type"
+          value="Vacation"
+          v-on:change="showHideDiv()"
+        />
+        <label for="vacation" class="emoji emoji-3">🌴</label>
+        <input
+          class="hidden"
+          type="radio"
+          id="away"
+          name="type"
+          value="Out of office"
+          v-on:change="showHideDiv()"
+        />
+        <label for="away" class="emoji emoji-4">👻</label>
+        <!-- <select name="type" id="type" @input="showHideDiv()">
             <option value="Working from home">Arbejder hjemme</option>
             <option value="Sick">Syg</option>
             <option value="Vacation">Ferie</option>
             <option value="Out of office">Væg fra kontoret</option>
-          </select>
-        </td>
+          </select> -->
+      </tr>
+      <tr id="emailRow">
+        <td><label for="email">Email:</label></td>
+        <td><input type="text" id="email" name="email" /></td>
       </tr>
       <tr id="startDateRow">
         <td><label for="startDate">Start:</label></td>

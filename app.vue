@@ -121,7 +121,7 @@ getDayData();
 
 console.log(pending);
 
-let everyone = reactive([
+let initialEveryone = [
   { name: "Adam", imageSrc: "Adam.jpg" },
   { name: "Ane Courage", imageSrc: "AneCourage.jpg" },
   { name: "Anja", imageSrc: "Anja.jpg" },
@@ -143,7 +143,9 @@ let everyone = reactive([
   { name: "Mikkel Hansen", imageSrc: "MikkelHansen.jpg" },
   { name: "Morten", imageSrc: "Morten.jpg" },
   { name: "Ricky Andersen", imageSrc: "RickyAndersen.jpg" },
-]);
+];
+
+let everyone = reactive(initialEveryone);
 let home = [];
 let sick = [];
 let vacation = [];
@@ -155,6 +157,7 @@ const registered = reactive([]);
 // console.log(data.value);
 
 const formatDayData = () => {
+  console.log("format day");
   toRaw(dayData.value).forEach((one) => {
     // console.log(one.type);
 
@@ -201,6 +204,7 @@ const add = () => {
     if (addedStatus.value > 0) {
       console.log("larger than 0");
       getWeekData();
+      getDayData();
       addedStatus.value = 0;
     }
 
@@ -236,6 +240,11 @@ const deleteStatus = () => {
     console.log(deletedStatus);
     if (deletedStatus.value == true) {
       console.log("true", deletedStatus);
+      everyone = initialEveryone;
+      home = [];
+      sick = [];
+      vacation = [];
+      away = [];
       getWeekData();
       getDayData();
     }
@@ -411,23 +420,25 @@ function dayView() {
     <div class="addStatus hidden">
       <AddStatus ref="addComponent"></AddStatus>
     </div>
-    <div class="deleteStatus hidden">
-      <h3>Slet status</h3>
-      <form class="deleteForm">
-        <table>
-          <tr id="emailRow">
-            <td><label for="email">Email:</label></td>
-            <td><input type="text" id="deleteEmail" name="email" /></td>
-          </tr>
-        </table>
-      </form>
-      <a class="btn" @click="loadEntries">Hent værdier</a>
-      <span class="loaderSpan"></span>
-      <div id="status"></div>
-      <!-- <table id="results"></table> -->
+    <div class="deleteContainer">
+      <div class="deleteStatus hidden">
+        <h3>Slet status</h3>
+        <form class="deleteForm">
+          <table>
+            <tr id="emailRow">
+              <td><label for="email">Email:</label></td>
+              <td><input type="text" id="deleteEmail" name="email" /></td>
+            </tr>
+          </table>
+        </form>
+        <a class="btn" @click="loadEntries">Hent værdier</a>
+        <span class="loaderSpan"></span>
+        <div id="status"></div>
+        <!-- <table id="results"></table> -->
 
-      <div v-if="state.length > 0">
-        <RegistrationsTable :registrations="state"></RegistrationsTable>
+        <div class="tableDiv" v-if="state.length > 0">
+          <RegistrationsTable :registrations="state"></RegistrationsTable>
+        </div>
       </div>
     </div>
   </div>

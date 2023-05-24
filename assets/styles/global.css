@@ -120,6 +120,10 @@ h3 {
   font-size: 25px;
 }
 
+h3 {
+  font-family: "OpenSans";
+}
+
 h4 {
   font-size: 25px;
 }
@@ -247,7 +251,7 @@ header nav a {
 .emojiLabel {
   margin-bottom: 30px;
 }
-.emoji {
+.emojiLabel .emoji {
   width: fit-content;
   font-size: 32px;
   border-bottom: 1px solid black;
@@ -276,15 +280,31 @@ header nav a {
   width: 87px;
   border-radius: 50%;
 }
-.addForm,
+.addForm {
+  margin-bottom: 25px;
+}
+
 .deleteForm {
-  margin-bottom: 30px;
+  margin-bottom: 15px;
+}
+
+#typeRow {
+  flex-direction: row;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
 }
 
 .addStatus {
   padding: 25px;
+  width: -moz-fit-content;
   width: fit-content;
-  height: 500px;
+  height: fit-content;
   background: #fbfbfb;
   position: fixed;
   top: 50%;
@@ -292,6 +312,7 @@ header nav a {
   transform: translate(-50%, -50%);
   /* width: 50%; */
   z-index: 3;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
 .addBtn {
@@ -305,11 +326,13 @@ header nav a {
 
 .succesMessage {
   margin-top: 25px;
+  display: flex;
+  align-items: center;
 }
 
 .succesMessage img {
-  height: 25px;
-  width: 25px;
+  height: 17px;
+  width: 28px;
 }
 
 #tableComponent tr {
@@ -364,7 +387,21 @@ header nav a {
   padding: 12px 15px;
 }
 
+.tableDiv {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 30px;
+}
+
+.deleteContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 .deleteStatus {
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  position: fixed;
   padding: 25px;
   width: -moz-fit-content;
   width: fit-content;
@@ -373,14 +410,20 @@ header nav a {
   min-height: 280px;
   background: #fbfbfb;
   position: absolute;
-  top: 6%;
+  top: 100px;
   /* top: 50%; */
   /* left: 50%; */
-  /* transform: translate(-50%, -50%); */
-  /* width: 50%; */
-  width: 72vw;
+  /* transform: translate(10%, 15%); */
+  /* width: 72%; */
+  /* width: 100%; */
+  max-width: calc(100vw - 110px);
+  /* max-width: 63%; */
   z-index: 3;
   overflow: scroll;
+}
+
+.deleteStatus::-webkit-scrollbar {
+  display: none;
 }
 
 .headerLogo {
@@ -470,14 +513,41 @@ footer {
 
 .btn {
   background-color: var(--black-color);
-  width: fit-content;
-  color: #fff;
-  outline: none;
-  padding: 0.8rem 2rem;
-  border: none;
-  margin-top: 2rem;
-  font-size: 14px;
+  border-style: none;
+  box-sizing: border-box;
+  color: #ffffff;
   cursor: pointer;
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 500;
+  height: 40px;
+  line-height: 20px;
+  list-style: none;
+  margin: 0;
+  outline: none;
+  padding: 10px 25px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  transition: color 100ms;
+  vertical-align: baseline;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.emoji {
+  font-size: 21px;
+  padding: 5px 7px;
+  cursor: pointer;
+  display: inline-block;
+}
+#home:checked ~ .emoji-1,
+#sick:checked ~ .emoji-2,
+#vacation:checked ~ .emoji-3,
+#away:checked ~ .emoji-4,
+#mood-5:checked ~ .emoji-5 {
+  background-color: #111;
 }
 
 .btn a {
@@ -564,11 +634,15 @@ footer {
 @media only screen and (min-width: 768px) {
   select,
   input {
-    min-width: 350px;
+    min-width: 275px;
   }
   .addStatus,
   .deleteStatus {
-    padding: 50px;
+    padding: 35px 45px 45px 45px;
+  }
+
+  .deleteStatus {
+    max-width: calc(100vw - 315px);
   }
 
   .dayGrid {
