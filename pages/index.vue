@@ -4,34 +4,46 @@ import { ref } from "vue";
 let isApiRespond = ref(false);
 import { reactive } from "vue";
 const addComponent = ref();
+const nuxtApp = useNuxtApp();
 const dayData = useState("dayData");
 const weekStateData = useState("weekStateData");
 const deletedStatus = useDeletedStatus();
 const addedStatus = useAddedStatus();
-
+const userNew = useUser();
 // console.log(removed);
 
 // console.log(dayData.value);
 // console.log(addComponent);
+nuxtApp.$getAccounts();
 
 const state = reactive([]);
 const pending = ref(false);
 const view = reactive({
   chosen: "week",
 });
-
+onBeforeMount(() => {
+  const accounts = nuxtApp.$getAccounts();
+  if (accounts.length) {
+    const user = {
+      isUserSignedIn: true,
+      name: accounts[0].name,
+      id: accounts[0].localAccountId,
+      homeId: accounts[0].homeAccountId,
+      country: accounts[0].idTokenClaims.country,
+    };
+    userNew.value = user;
+  }
+});
 function formatDate(date) {
   //   console.log(date);
   let day = date.getDate();
   let month = date.getMonth() + 1;
   let year = date.getFullYear();
   if (month < 10) {
-    // console.log("yes");
     month = `0${month}`;
   }
 
   if (day < 10) {
-    // console.log("yes");
     day = `0${day}`;
   }
   let formattedDate = `${year}-${month}-${day}`;
@@ -218,6 +230,10 @@ const add = () => {
 //   // console.log(weekData);
 // };
 
+function signIn() {
+  this.$msal.signIn();
+}
+
 const deleteStatus = () => {
   document.querySelector(".deleteStatus").classList.remove("hidden");
   document.querySelector(".overlay").classList.remove("hidden");
@@ -314,116 +330,134 @@ function dayView() {
 </script>
 
 <template>
-  <div class="overlay hidden"></div>
-  <div class="bodyTop">
-    <div class="addDelete">
-      <div class="add" @click="add">
-        <img src="/img/square-plus-solid.svg" alt="" />
-        <p>Opret status</p>
+  <div v-if="!userNew.isUserSignedIn" class="signin">
+    <div class="signInContent">
+      <div class="headerLogo">
+        <img class="logo" src="/img/ApplyLogotypeBlackLarge.svg" alt="" />
+        <h1>Status</h1>
       </div>
-      <div class="delete" @click="deleteStatus">
-        <img src="/img/square-minus-solid.svg" alt="" />
-        <p>Slet status</p>
-      </div>
+      <p>Login for at tilgå overbliksværktøjet</p>
+      <button class="btn" @click="nuxtApp.$signIn">Log in</button>
     </div>
   </div>
-  <div class="main">
-    <div class="headerLogo">
-      <img class="logo" src="/img/ApplyLogotypeBlackLarge.svg" alt="" />
-      <h1>Status</h1>
-    </div>
-    <p>Visning:</p>
-    <div class="view">
-      <p @click="weekView" class="viewOption week active">Uge</p>
-      <p>|</p>
-      <p @click="dayView" class="viewOption day">Dag</p>
-    </div>
-    <!-- <div>{{ state }}</div> -->
-    <div class="dayContainer" v-if="view.chosen == 'day'">
-      <div v-if="everyone.length > 0">
-        <div class="emojiLabel">
-          <p class="emoji">🏢</p>
-          <p>På kontoret</p>
-        </div>
-        <div class="dayGrid">
-          <div v-for="(item, index) in everyone" :key="index">
-            <Person :imageSrc="item.imageSrc" status="active"></Person>
-          </div>
-        </div>
-      </div>
+  <div class="overlay hidden"></div>
+  <div v-if="userNew.isUserSignedIn" class="loggedInView">
+    <div class="bodyTop">
+      <!-- <p>{{ userNew }} user</p> -->
 
-      <div v-if="home.length > 0">
-        <div class="emojiLabel">
-          <p class="emoji">🏡</p>
-          <p>Hjemme</p>
-        </div>
-        <div class="dayGrid">
-          <div v-for="(item, index) in home" :key="index">
-            <Person :imageSrc="item.imageSrc" status="active"></Person>
-          </div>
-        </div>
-      </div>
+      <!-- <button @click="nuxtApp.$getAccounts">Get accounts</button> -->
 
-      <div v-if="sick.length > 0">
-        <div class="emojiLabel">
-          <p class="emoji">🤒</p>
-          <p>Hjemme</p>
+      <div class="addDelete">
+        <div class="add" @click="add">
+          <img src="/img/square-plus-solid.svg" alt="" />
+          <p>Opret status</p>
         </div>
-        <div class="dayGrid">
-          <div v-for="(item, index) in sick" :key="index">
-            <Person :imageSrc="item.imageSrc" status="active"></Person>
-          </div>
-        </div>
-      </div>
-
-      <div v-if="away.length > 0">
-        <div class="emojiLabel">
-          <p class="emoji">👻</p>
-          <p>Væk fra kontoret</p>
-        </div>
-        <div class="dayGrid">
-          <div v-for="(item, index) in away" :key="index">
-            <Person :imageSrc="item.imageSrc" status="offline"></Person>
-          </div>
+        <div class="delete" @click="deleteStatus">
+          <img src="/img/square-minus-solid.svg" alt="" />
+          <p>Slet status</p>
         </div>
       </div>
-      <div v-if="vacation.length > 0">
-        <div class="emojiLabel">
-          <p class="emoji">🌴</p>
-          <p>Væk fra kontoret</p>
-        </div>
-        <div class="dayGrid">
-          <div v-for="(item, index) in vacation" :key="index">
-            <Person :imageSrc="item.imageSrc" status="offline"></Person>
-          </div>
-        </div>
+      <div class="signOutBtn">
+        <button @click="nuxtApp.$signOut" class="btn">Log ud</button>
       </div>
     </div>
-    <div class="weekContainer" v-if="view.chosen == 'week'">
-      <span v-if="pending" class="loader pendingLoader"></span>
-      <WeekView :data="weekStateData" ref="weekRef"></WeekView>
-    </div>
-    <div class="addStatus hidden">
-      <AddStatus ref="addComponent"></AddStatus>
-    </div>
-    <div class="deleteContainer">
-      <div class="deleteStatus hidden">
-        <h3>Slet status</h3>
-        <form class="deleteForm">
-          <table>
-            <tr id="emailRow">
-              <td><label for="email">Email:</label></td>
-              <td><input type="text" id="deleteEmail" name="email" /></td>
-            </tr>
-          </table>
-        </form>
-        <a class="btn" @click="loadEntries">Hent værdier</a>
-        <span class="loaderSpan"></span>
-        <div id="status"></div>
-        <!-- <table id="results"></table> -->
+    <div class="main">
+      <div class="headerLogo">
+        <img class="logo" src="/img/ApplyLogotypeBlackLarge.svg" alt="" />
+        <h1>Status</h1>
+      </div>
+      <p>Visning:</p>
+      <div class="view">
+        <p @click="weekView" class="viewOption week active">Uge</p>
+        <p>|</p>
+        <p @click="dayView" class="viewOption day">Dag</p>
+      </div>
+      <!-- <div>{{ state }}</div> -->
+      <div class="dayContainer" v-if="view.chosen == 'day'">
+        <div v-if="home.length > 0">
+          <div class="emojiLabel">
+            <p class="emoji">🏡</p>
+            <p>Hjemme</p>
+          </div>
+          <div class="dayGrid">
+            <div v-for="(item, index) in home" :key="index">
+              <Person :imageSrc="item.imageSrc" status="active"></Person>
+            </div>
+          </div>
+        </div>
 
-        <div class="tableDiv" v-if="state.length > 0">
-          <RegistrationsTable :registrations="state"></RegistrationsTable>
+        <div v-if="sick.length > 0">
+          <div class="emojiLabel">
+            <p class="emoji">🤒</p>
+            <p>Syg</p>
+          </div>
+          <div class="dayGrid">
+            <div v-for="(item, index) in sick" :key="index">
+              <Person :imageSrc="item.imageSrc" status="active"></Person>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="away.length > 0">
+          <div class="emojiLabel">
+            <p class="emoji">👻</p>
+            <p>Væk fra kontoret</p>
+          </div>
+          <div class="dayGrid">
+            <div v-for="(item, index) in away" :key="index">
+              <Person :imageSrc="item.imageSrc" status="offline"></Person>
+            </div>
+          </div>
+        </div>
+        <div v-if="vacation.length > 0">
+          <div class="emojiLabel">
+            <p class="emoji">🌴</p>
+            <p>Væk fra kontoret</p>
+          </div>
+          <div class="dayGrid">
+            <div v-for="(item, index) in vacation" :key="index">
+              <Person :imageSrc="item.imageSrc" status="offline"></Person>
+            </div>
+          </div>
+        </div>
+        <div v-if="everyone.length > 0">
+          <div class="emojiLabel">
+            <p class="emoji">🏢</p>
+            <p>På kontoret</p>
+          </div>
+          <div class="dayGrid">
+            <div v-for="(item, index) in everyone" :key="index">
+              <Person :imageSrc="item.imageSrc" status="active"></Person>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="weekContainer" v-if="view.chosen == 'week'">
+        <span v-if="pending" class="loader pendingLoader"></span>
+        <WeekView :data="weekStateData" ref="weekRef"></WeekView>
+      </div>
+      <div class="addStatus hidden">
+        <AddStatus ref="addComponent"></AddStatus>
+      </div>
+      <div class="deleteContainer">
+        <div class="deleteStatus hidden">
+          <h3>Slet status</h3>
+          <form class="deleteForm">
+            <table>
+              <tr id="emailRow">
+                <td><label for="email">Email:</label></td>
+                <td><input type="text" id="deleteEmail" name="email" /></td>
+              </tr>
+            </table>
+          </form>
+          <a class="btn" @click="loadEntries">Hent værdier</a>
+          <span class="loaderSpan"></span>
+          <div id="status"></div>
+          <!-- <table id="results"></table> -->
+
+          <div class="tableDiv" v-if="state.length > 0">
+            <RegistrationsTable :registrations="state"></RegistrationsTable>
+          </div>
         </div>
       </div>
     </div>

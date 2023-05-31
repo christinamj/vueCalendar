@@ -280,6 +280,31 @@ header nav a {
   width: 87px;
   border-radius: 50%;
 }
+
+.signin .headerLogo {
+  margin-bottom: 35px;
+}
+
+.signin p {
+  padding-bottom: 30px;
+}
+
+.signInContent {
+  padding: 35px;
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: fit-content;
+  background-color: white;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.signOutBtn {
+  padding: 30px;
+  padding-bottom: 0;
+}
+
 .addForm {
   margin-bottom: 25px;
 }
@@ -534,6 +559,12 @@ footer {
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
+  transition: 0.3s;
+  font-family: "OpenSans-medium";
+}
+
+.btn:hover {
+  background-color: #585858;
 }
 
 .emoji {
@@ -643,6 +674,10 @@ footer {
 
   .deleteStatus {
     max-width: calc(100vw - 315px);
+  }
+
+  .signInContent {
+    padding: 66px;
   }
 
   .dayGrid {
