@@ -7,7 +7,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     auth: {
       clientId: "b56ef9e8-1c21-4679-9267-88c7f5fa7785",
       authority: "https://login.microsoftonline.com/organizations",
-      redirectUri: "https://kalenderoverblik.netlify.app/", // Must be registered as a SPA redirectURI on your app registration
+      redirectUri: "https://kalenderoverblik.netlify.app/requestlogin", // Must be registered as a SPA redirectURI on your app registration
       postLogoutRedirectUri: "/", // Must be registered as a SPA redirectURI on your app registration
     },
     cache: {

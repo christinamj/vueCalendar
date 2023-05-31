@@ -207,6 +207,24 @@ header nav a {
   margin-bottom: 20px;
 }
 
+.loaderWrapper {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+}
+
+.loaderContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.loaderContainer .loader {
+  width: 35px;
+  height: 35px;
+}
+
 .smallLoader {
   width: 20px;
   height: 20px;
