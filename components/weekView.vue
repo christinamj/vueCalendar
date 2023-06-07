@@ -123,6 +123,15 @@ formatData();
 // console.log(data);
 
 function formatData() {
+  console.log(props.data);
+  var curr = new Date(); // get current date
+  var first = curr.getDate() - curr.getDay() + 1; // First day is the day of the month - the day of the week
+  var last = first + 4; // last day is the first day + 6
+
+  var firstday = new Date(curr.setDate(first));
+  var lastday = new Date(curr.setDate(last));
+  var formattedFirstDay = formatDate(firstday);
+  var formattedLastDay = formatDate(lastday);
   everyone.forEach((one) => {
     let obj = {
       name: one.name,
@@ -135,12 +144,57 @@ function formatData() {
     };
     toRaw(props.data).forEach((elm) => {
       if (one.name == elm.name) {
-        if (elm.type == "Vacation") {
+        if (elm.type == "Vacation" || elm.type == "Out of office") {
           let startDate = new Date(elm.start.toString());
           let end = moment(elm.end.toString()).utc().format("llll");
           let endDate = new Date(end.toString());
           let startWeekDay = startDate.getDay().toString();
           let endWeekDay = endDate.getDay().toString();
+          console.log(elm, daysBetween(endDate, startDate));
+
+          const dayRange = daysBetween(endDate, startDate);
+
+          if (dayRange > 5) {
+            if (
+              elm.start >= formattedFirstDay &&
+              elm.start <= formattedLastDay
+            ) {
+              console.log("lager than 5");
+              for (const property in obj) {
+                let propNumber = parseInt(property);
+                console.log(propNumber);
+                console.log(property);
+                //   console.log(`${property}: ${object[property]}`);
+                if (
+                  typeof propNumber == "number" &&
+                  propNumber >= startWeekDay
+                ) {
+                  console.log("it is");
+                  obj[property] = elm.type;
+                }
+                //   console.log(obj);
+              }
+            } else if (
+              elm.end >= formattedFirstDay &&
+              elm.end <= formattedLastDay
+            ) {
+              console.log("lager than 5");
+              for (const property in obj) {
+                let propNumber = parseInt(property);
+                console.log(propNumber);
+                console.log(property);
+                //   console.log(`${property}: ${object[property]}`);
+                if (
+                  typeof propNumber == "number" &&
+                  propNumber <= startWeekDay
+                ) {
+                  console.log("it is");
+                  obj[property] = elm.type;
+                }
+                //   console.log(obj);
+              }
+            }
+          }
           // console.log(startWeekDay);
           // console.log(endWeekDay);
           // console.log(endDate);
@@ -153,7 +207,12 @@ function formatData() {
           }
 
           // console.log(elm);
-        } else {
+        } else if (
+          elm.type != "Vacation" &&
+          elm.type != "Out of office" &&
+          elm.start >= formattedFirstDay &&
+          elm.start <= formattedLastDay
+        ) {
           // console.log(one);
           // console.log(elm);
           let date = new Date(elm.start.toString());
@@ -189,6 +248,12 @@ function formatData() {
 }
 
 // console.log(weekArray);
+
+function daysBetween(date1, date2) {
+  let difference = date1.getTime() - date2.getTime();
+  let TotalDays = Math.ceil(difference / (1000 * 3600 * 24));
+  return TotalDays;
+}
 
 function formatDate(date) {
   //   console.log(date);

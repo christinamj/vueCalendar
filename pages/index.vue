@@ -6,7 +6,7 @@ import { reactive } from "vue";
 const addComponent = ref();
 const nuxtApp = useNuxtApp();
 const dayData = useState("dayData");
-const weekStateData = useState("weekStateData");
+const weekStateData = useWeekData();
 const deletedStatus = useDeletedStatus();
 const addedStatus = useAddedStatus();
 const userNew = useUser();
@@ -104,9 +104,23 @@ async function getWeekData() {
   var myHeaders2 = new Headers();
   myHeaders2.append("Content-Type", "application/json");
 
+  const now = new Date();
+  const earlyStart = new Date(
+    firstday.getFullYear(),
+    firstday.getMonth(),
+    firstday.getDate() - 28
+  );
+  const lateEnd = new Date(
+    lastday.getFullYear(),
+    lastday.getMonth(),
+    lastday.getDate() + 28
+  );
+  const earlyStartFormatted = formatDate(earlyStart);
+  const lateEndFormatted = formatDate(lateEnd);
+
   var raw2 = JSON.stringify({
-    start: formattedFirstDay.toString(),
-    end: formattedLastDay.toString(),
+    start: earlyStartFormatted.toString(),
+    end: lateEndFormatted.toString(),
   });
   let requestOptions2 = {
     method: "POST",
@@ -121,8 +135,19 @@ async function getWeekData() {
     `https://prod-67.westeurope.logic.azure.com:443/workflows/d4b2e94b32c047b794d22acb60dc253e/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xfQn5bCTCeDVKzROj5O9jCW0_wl3KhHStjsCRgCQxYc`,
     requestOptions2
   ).then(function (data) {
-    weekStateData.value = data.data.value;
+    console.log("data", data);
+    // weekStateData.value = data.data.value;
     pending.value = false;
+
+    data.data.value.forEach((one) => {
+      if (
+        (one.start >= formattedFirstDay && one.start <= formattedLastDay) ||
+        (one.end >= formattedFirstDay && one.end <= formattedLastDay)
+      ) {
+        console.log(one);
+        weekStateData.value.push(one);
+      }
+    });
   });
 }
 
