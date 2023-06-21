@@ -18,9 +18,9 @@ nuxtApp.$getAccounts();
 
 const state = reactive([]);
 const pending = ref(false);
-const view = reactive({
-  chosen: "week",
-});
+// const view = reactive({
+//   chosen: "week",
+// });
 onBeforeMount(() => {
   const accounts = nuxtApp.$getAccounts();
   if (accounts.length) {
@@ -151,7 +151,7 @@ async function getWeekData() {
   });
 }
 
-getWeekData();
+// getWeekData();
 getDayData();
 
 let initialEveryone = [
@@ -230,7 +230,7 @@ const add = () => {
     document.querySelector(".addStatus").classList.add("hidden");
     document.querySelector(".overlay").classList.add("hidden");
     if (addedStatus.value > 0) {
-      getWeekData();
+      // getWeekData();
       getDayData();
       addedStatus.value = 0;
     }
@@ -272,7 +272,7 @@ const deleteStatus = () => {
       sick = [];
       vacation = [];
       away = [];
-      getWeekData();
+      // getWeekData();
       getDayData();
     }
     deletedStatus.value = false;
@@ -344,13 +344,13 @@ function buildResults(json) {
 function weekView() {
   document.querySelector(".week").classList.add("active");
   document.querySelector(".day").classList.remove("active");
-  view.chosen = "week";
+  // view.chosen = "week";
 }
 
 function dayView() {
   document.querySelector(".week").classList.remove("active");
   document.querySelector(".day").classList.add("active");
-  view.chosen = "day";
+  // view.chosen = "day";
 }
 </script>
 
@@ -391,14 +391,14 @@ function dayView() {
         <img class="logo" src="/img/ApplyLogotypeBlackLarge.svg" alt="" />
         <h1>Status</h1>
       </div>
-      <p>Visning:</p>
-      <div class="view">
+      <!-- <p>Visning:</p> -->
+      <!-- <div class="view">
         <p @click="weekView" class="viewOption week active">Uge</p>
         <p>|</p>
         <p @click="dayView" class="viewOption day">Dag</p>
-      </div>
+      </div> -->
       <!-- <div>{{ state }}</div> -->
-      <div class="dayContainer" v-if="view.chosen == 'day'">
+      <div class="dayContainer">
         <div v-if="home.length > 0">
           <div class="emojiLabel">
             <p class="emoji">🏡</p>
@@ -457,10 +457,10 @@ function dayView() {
           </div>
         </div>
       </div>
-      <div class="weekContainer" v-if="view.chosen == 'week'">
+      <!-- <div class="weekContainer" v-if="view.chosen == 'week'">
         <span v-if="pending" class="loader pendingLoader"></span>
         <WeekView :data="weekStateData" ref="weekRef"></WeekView>
-      </div>
+      </div> -->
       <div class="addStatus hidden">
         <AddStatus ref="addComponent"></AddStatus>
       </div>
