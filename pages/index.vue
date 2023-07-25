@@ -409,7 +409,6 @@ function dayView() {
         <p>|</p>
         <p @click="dayView" class="viewOption day">Dag</p>
       </div>
-      <div>{{ state }}</div>
       <div class="dayContainer" v-if="view.chosen == 'day'">
         <div v-if="homeStateData.length > 0">
           <div class="emojiLabel">
