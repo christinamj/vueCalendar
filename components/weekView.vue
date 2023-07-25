@@ -123,7 +123,7 @@ formatData();
 // console.log(data);
 
 function formatData() {
-  console.log(props.data);
+  // console.log(props.data);
   var curr = new Date(); // get current date
   var first = curr.getDate() - curr.getDay() + 1; // First day is the day of the month - the day of the week
   var last = first + 4; // last day is the first day + 6
@@ -150,7 +150,7 @@ function formatData() {
           let endDate = new Date(end.toString());
           let startWeekDay = startDate.getDay().toString();
           let endWeekDay = endDate.getDay().toString();
-          console.log(elm, daysBetween(endDate, startDate));
+          // console.log(elm, daysBetween(endDate, startDate));
 
           const dayRange = daysBetween(endDate, startDate);
 
@@ -159,20 +159,14 @@ function formatData() {
               elm.start >= formattedFirstDay &&
               elm.start <= formattedLastDay
             ) {
-              console.log("lager than 5");
               for (const property in obj) {
                 let propNumber = parseInt(property);
-                console.log(propNumber);
-                console.log(property);
-                //   console.log(`${property}: ${object[property]}`);
                 if (
                   typeof propNumber == "number" &&
                   propNumber >= startWeekDay
                 ) {
-                  console.log("it is");
                   obj[property] = elm.type;
                 }
-                //   console.log(obj);
               }
             } else if (
               elm.end >= formattedFirstDay &&
@@ -181,14 +175,14 @@ function formatData() {
               console.log("lager than 5");
               for (const property in obj) {
                 let propNumber = parseInt(property);
-                console.log(propNumber);
-                console.log(property);
-                //   console.log(`${property}: ${object[property]}`);
+                // console.log(propNumber);
+                // console.log(property);
+                // //   console.log(`${property}: ${object[property]}`);
                 if (
                   typeof propNumber == "number" &&
                   propNumber <= startWeekDay
                 ) {
-                  console.log("it is");
+                  // console.log("it is");
                   obj[property] = elm.type;
                 }
                 //   console.log(obj);

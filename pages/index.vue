@@ -5,7 +5,11 @@ let isApiRespond = ref(false);
 import { reactive } from "vue";
 const addComponent = ref();
 const nuxtApp = useNuxtApp();
-const dayData = useState("dayData");
+const dayData = useDayData();
+const homeStateData = useHomeData();
+const awayData = useAwayData();
+const vacationData = useVacationData();
+const sickData = useSickData();
 const weekStateData = useWeekData();
 const deletedStatus = useDeletedStatus();
 const addedStatus = useAddedStatus();
@@ -18,9 +22,9 @@ nuxtApp.$getAccounts();
 
 const state = reactive([]);
 const pending = ref(false);
-// const view = reactive({
-//   chosen: "week",
-// });
+const view = reactive({
+  chosen: "week",
+});
 onBeforeMount(() => {
   const accounts = nuxtApp.$getAccounts();
   if (accounts.length) {
@@ -51,6 +55,7 @@ function formatDate(date) {
 }
 
 async function getDayData() {
+  homeStateData.value.splice(0);
   var myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
 
@@ -85,6 +90,7 @@ async function getDayData() {
     requestOptions
   ).then(function (data) {
     dayData.value = data.data.value;
+
     formatDayData();
   });
 }
@@ -135,8 +141,8 @@ async function getWeekData() {
     `https://prod-67.westeurope.logic.azure.com:443/workflows/d4b2e94b32c047b794d22acb60dc253e/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xfQn5bCTCeDVKzROj5O9jCW0_wl3KhHStjsCRgCQxYc`,
     requestOptions2
   ).then(function (data) {
-    console.log("data", data);
-    // weekStateData.value = data.data.value;
+    // console.log("data", data);
+    weekStateData.value = data.data.value;
     pending.value = false;
 
     data.data.value.forEach((one) => {
@@ -144,14 +150,13 @@ async function getWeekData() {
         (one.start >= formattedFirstDay && one.start <= formattedLastDay) ||
         (one.end >= formattedFirstDay && one.end <= formattedLastDay)
       ) {
-        console.log(one);
         weekStateData.value.push(one);
       }
     });
   });
 }
 
-// getWeekData();
+getWeekData();
 getDayData();
 
 let initialEveryone = [
@@ -179,10 +184,10 @@ let initialEveryone = [
 ];
 
 let everyone = reactive(initialEveryone);
-let home = [];
-let sick = [];
-let vacation = [];
-let away = [];
+// let home = [];
+// let sick = [];
+// let vacation = [];
+// let away = [];
 const registered = reactive([]);
 // let registrered = [];
 
@@ -190,31 +195,33 @@ const registered = reactive([]);
 // console.log(data.value);
 
 const formatDayData = () => {
+  // console.log("format day data");
+  // console.log(dayData.value);
   toRaw(dayData.value).forEach((one) => {
     if (one.type == "Working from home") {
       let str = one.name.replace(/\s+/g, "");
       one.imageSrc = `${str}.jpg`;
-      home.push(one);
+      homeStateData.value.push(one);
       everyone = everyone.filter((person) => person.name != one.name);
     } else if (one.type == "Out of office") {
       let str = one.name.replace(/\s+/g, "");
       one.imageSrc = `${str}.jpg`;
       // console.log("Out of office");
-      away.push(one);
+      awayData.value.push(one);
 
       everyone = everyone.filter((person) => person.name != one.name);
     } else if (one.type == "Sick") {
       let str = one.name.replace(/\s+/g, "");
       one.imageSrc = `${str}.jpg`;
       // console.log("sick");
-      sick.push(one);
+      sickData.value.push(one);
 
       everyone = everyone.filter((person) => person.name != one.name);
     } else if (one.type == "Vacation") {
       let str = one.name.replace(/\s+/g, "");
       one.imageSrc = `${str}.jpg`;
       // console.log("Vacation");
-      vacation.push(one);
+      vacationData.value.push(one);
 
       everyone = everyone.filter((person) => person.name != one.name);
     }
@@ -230,30 +237,30 @@ const add = () => {
     document.querySelector(".addStatus").classList.add("hidden");
     document.querySelector(".overlay").classList.add("hidden");
     if (addedStatus.value > 0) {
-      // getWeekData();
+      getWeekData();
       getDayData();
       addedStatus.value = 0;
     }
 
-    // this.$refs.weekRef.refreshData();
+    this.$refs.weekRef.refreshData();
   });
 };
 
-// const refreshData = () => {
-//   console.log("refreshed");
-//   refresh();
-//   weekStateData.value = weekData.value;
-//   // console.log(weekData);
-// };
+const refreshData = () => {
+  console.log("refreshed");
+  refresh();
+  weekStateData.value = weekData.value;
+  // console.log(weekData);
+};
 
-// const refreshDayData = () => {
-//   // console.log("refreshed");
-//   console.log("refreshing day");
-//   refreshDay();
-//   dayData.value = data.value;
+const refreshDayData = () => {
+  // console.log("refreshed");
+  console.log("refreshing day");
+  refreshDay();
+  dayData.value = data.value;
 
-//   // console.log(weekData);
-// };
+  // console.log(weekData);
+};
 
 function signIn() {
   this.$msal.signIn();
@@ -268,10 +275,14 @@ const deleteStatus = () => {
     document.querySelector(".overlay").classList.add("hidden");
     if (deletedStatus.value == true) {
       everyone = initialEveryone;
-      home = [];
-      sick = [];
-      vacation = [];
-      away = [];
+      homeStateData.value.splice(0);
+      sickData.value.splice(0);
+      vacationData.value.splice(0);
+      awayData.value.splice(0);
+      // home = [];
+      // sick = [];
+      // vacation = [];
+      // away = [];
       // getWeekData();
       getDayData();
     }
@@ -331,6 +342,7 @@ function buildResults(json) {
     } else if (one.type == "Sick") {
       one.type = "Syg";
     } else if (one.type == "Vacation") {
+      console.log("Feri");
       one.type = "Ferie";
     } else if (one.type == "Out of office") {
       one.type = "Væk fra kontoret";
@@ -344,13 +356,13 @@ function buildResults(json) {
 function weekView() {
   document.querySelector(".week").classList.add("active");
   document.querySelector(".day").classList.remove("active");
-  // view.chosen = "week";
+  view.chosen = "week";
 }
 
 function dayView() {
   document.querySelector(".week").classList.remove("active");
   document.querySelector(".day").classList.add("active");
-  // view.chosen = "day";
+  view.chosen = "day";
 }
 </script>
 
@@ -391,56 +403,56 @@ function dayView() {
         <img class="logo" src="/img/ApplyLogotypeBlackLarge.svg" alt="" />
         <h1>Status</h1>
       </div>
-      <!-- <p>Visning:</p> -->
-      <!-- <div class="view">
+      <p>Visning:</p>
+      <div class="view">
         <p @click="weekView" class="viewOption week active">Uge</p>
         <p>|</p>
         <p @click="dayView" class="viewOption day">Dag</p>
-      </div> -->
-      <!-- <div>{{ state }}</div> -->
-      <div class="dayContainer">
-        <div v-if="home.length > 0">
+      </div>
+      <div>{{ state }}</div>
+      <div class="dayContainer" v-if="view.chosen == 'day'">
+        <div v-if="homeStateData.length > 0">
           <div class="emojiLabel">
             <p class="emoji">🏡</p>
             <p>Hjemme</p>
           </div>
           <div class="dayGrid">
-            <div v-for="(item, index) in home" :key="index">
+            <div v-for="(item, index) in homeStateData" :key="index">
               <Person :imageSrc="item.imageSrc" status="active"></Person>
             </div>
           </div>
         </div>
 
-        <div v-if="sick.length > 0">
+        <div v-if="sickData.length > 0">
           <div class="emojiLabel">
             <p class="emoji">🤒</p>
             <p>Syg</p>
           </div>
           <div class="dayGrid">
-            <div v-for="(item, index) in sick" :key="index">
+            <div v-for="(item, index) in sickData" :key="index">
               <Person :imageSrc="item.imageSrc" status="active"></Person>
             </div>
           </div>
         </div>
 
-        <div v-if="away.length > 0">
+        <div v-if="awayData.length > 0">
           <div class="emojiLabel">
             <p class="emoji">👻</p>
             <p>Væk fra kontoret</p>
           </div>
           <div class="dayGrid">
-            <div v-for="(item, index) in away" :key="index">
+            <div v-for="(item, index) in awayData" :key="index">
               <Person :imageSrc="item.imageSrc" status="offline"></Person>
             </div>
           </div>
         </div>
-        <div v-if="vacation.length > 0">
+        <div v-if="vacationData.length > 0">
           <div class="emojiLabel">
             <p class="emoji">🌴</p>
-            <p>Væk fra kontoret</p>
+            <p>På ferie</p>
           </div>
           <div class="dayGrid">
-            <div v-for="(item, index) in vacation" :key="index">
+            <div v-for="(item, index) in vacationData" :key="index">
               <Person :imageSrc="item.imageSrc" status="offline"></Person>
             </div>
           </div>
@@ -457,10 +469,10 @@ function dayView() {
           </div>
         </div>
       </div>
-      <!-- <div class="weekContainer" v-if="view.chosen == 'week'">
+      <div class="weekContainer" v-if="view.chosen == 'week'">
         <span v-if="pending" class="loader pendingLoader"></span>
         <WeekView :data="weekStateData" ref="weekRef"></WeekView>
-      </div> -->
+      </div>
       <div class="addStatus hidden">
         <AddStatus ref="addComponent"></AddStatus>
       </div>
